@@ -44,6 +44,7 @@ class Member {
   void PathToMemberBFS(uint64_t dst_member_id);
   void PathToMemberIDDFS(uint64_t dst_member_id);
   void PrintPath(Member *dst);
+  Member* DLS(Member* dst, uint64_t dst_member_id, double key);
   void DumpConnections();
 
   // For graph algorithms

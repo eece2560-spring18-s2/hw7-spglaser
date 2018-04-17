@@ -196,10 +196,50 @@ void Database::LoadData(const std::string &data_folder_path,
 
 void Database::BuildMemberGraph() {
   // Fill in your code here
+  
+  for(Group *g : groups){
+    unsigned int groupSize;
+    groupSize = g->members.size();
+    
+    for(unsigned int i=0; i<groupSize; i++){
+      for(unsigned int j =0; j<groupSize; j++){
+        if(j!=i){
+          MemberConnection connection;
+          connection.group =g;
+          connection.dst = g->members[j];
+          g->members[i]->connecting_members[g->members[j]->member_id] = connection;
+        }
+      }
+    }
+  }
 }
 
 double Database::BestGroupsToJoin(Member *root) {
   // Fill in your code here
+  Member* u;
+  std::priority_queue<Member*> Q;
+  double weight =0;
+  root->key =0;
+  for(Member* m : members){
+    m->key = 99999;
+    Q.push(m);
+  }
+  
+  while(!Q.empty()){
+    u=Q.top();
+    Q.pop();
+    u->color= COLOR_BLACK;
+    
+    for ( auto it = u->connecting_members.begin(); it != u->connecting_members.end(); it++ ){
+      if((it->second.dst->color != COLOR_BLACK) && (it->second.GetWeight() < it->second.dst->key)){
+        it->second.dst->parent = u;
+        it->second.dst->key = it->second.GetWeight();
+        weight= weight+ it->second.dst->key-1;
+      }
+    }
+  }
+  
+  return weight;
 }
 
 }
